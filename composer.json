@@ -15,6 +15,9 @@
   "require-dev": {
     "phpunit/phpunit": "5.*"
   },
+  "suggest": {
+    "ext-intl": "For faster extraction of grapheme clusters"
+  },
   "autoload": {
     "psr-4": {
       "Pheme\\Stream\\": "src/"
