@@ -31,6 +31,7 @@ class BufferedReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($r->read());
         $this->assertFalse($r->read());
         $r->unread();
+        $r->unread();
         $this->assertEquals('c', $r->read());
         $this->assertFalse($r->read());
         $this->assertFalse($r->read());
@@ -43,6 +44,8 @@ class BufferedReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('b', $r->read());
         $this->assertEquals("\r", $r->read());
         $this->assertEquals("\n", $r->read());
+        $this->assertFalse($r->read());
+        $r->unread();
         $this->assertFalse($r->read());
         $this->assertFalse($r->read());
     }

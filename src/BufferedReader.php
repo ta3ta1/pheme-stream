@@ -12,7 +12,7 @@ class BufferedReader implements BufferedReaderInterface
     /**
      * @var int
      */
-    private $bufferLength;
+    private $bufferCapacity;
 
     /**
      * @var array
@@ -33,8 +33,8 @@ class BufferedReader implements BufferedReaderInterface
     public function __construct(ReaderInterface $reader, $bufferCapacity)
     {
         $this->reader = $reader;
-        $this->bufferLength = $bufferCapacity;
-        if ($this->bufferLength < 0) {
+        $this->bufferCapacity = $bufferCapacity;
+        if ($this->bufferCapacity < 0) {
             throw new \UnexpectedValueException("bufferCapacity must be >= 0");
         }
         $this->bufferIndex = 0;
@@ -50,18 +50,28 @@ class BufferedReader implements BufferedReaderInterface
         } else {
             $read = $this->reader->read();
             if ($read !== false) {
-                // update buffer
-                array_push($this->buffer, $read);
-                if (count($this->buffer) > $this->bufferLength) {
-                    array_shift($this->buffer);
-                }
-                $this->bufferIndex = count($this->buffer);
+                $this->updateBuffer($read);
 
                 return $read;
             } else {
+                // no duplicated eof.
+                $last = empty($this->buffer) ? null : $this->buffer[count($this->buffer) - 1];
+                if ($last !== false) {
+                    $this->updateBuffer($read);
+                }
+
                 return false;
             }
         }
+    }
+
+    private function updateBuffer($value)
+    {
+        array_push($this->buffer, $value);
+        if (count($this->buffer) > $this->bufferCapacity) {
+            array_shift($this->buffer);
+        }
+        $this->bufferIndex = count($this->buffer);
     }
 
     /**
